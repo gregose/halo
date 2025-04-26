@@ -1,12 +1,15 @@
 esphome:
   name: halo-v1
   friendly_name: Halo Air Quality Sensor
+  name_add_mac_suffix: true
   platformio_options:
     upload_speed: 921600
     build_unflags: -Werror=all
     board_build.flash_mode: dio
     board_build.f_flash: 80000000L
     board_build.f_cpu: 240000000L
+
+  min_version: 2025.2.0
 
   project:
     name: "yashmulgaonkar.Halo-v1"
@@ -18,6 +21,7 @@ dashboard_import:
 
 ota:
   - platform: esphome
+    id: ota_default
 
 wifi:
   # Disable power save more for compatibility with some Ubiquiti networks.
@@ -35,11 +39,15 @@ web_server:
 packages:
   core: !include Halo-v1-Core.yaml
 
-# Add local timezone for development since Docker container not set to local timezone
+# Add local timezone and use sntp instead of time from HA
 time:
-  - platform: homeassistant
+  - platform: sntp
     id: !extend ha_time
     timezone: "America/Chicago"
+
+# Disable reboot if HA connection times out
+api:
+  reboot_timeout: 0s
 
 # required to disable wifi power save mode
 esp32_improv: !remove
