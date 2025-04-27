@@ -17,14 +17,13 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4.1.7
-      - name: ESPHome ${{ matrix.esphome-version }}
+      - name: Build firmware with ESPHome ${{ matrix.esphome-version }}
         uses: esphome/build-action@v6.0.0
+        id: esphome-build
         with:
           yaml-file: ${{ matrix.file }}
           version: ${{ matrix.esphome-version }}
-            - name: Upload artifact
       - name: upload build
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: ${{ steps.esphome-build.outputs.name }}
-          path: output
+          path: ${{ steps.esphome-build.outputs.name }}
