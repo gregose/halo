@@ -131,7 +131,7 @@ api:
   on_client_connected:
       - delay: 1s
       - light.turn_off: rgb_light
-      - lambda: 'id(cycleCounter) = 30;'    
+      - lambda: 'id(cycleCounter) = 30;'
   services:
     #Co2 Calibration Service
     - service: calibrate_co2_value
@@ -185,14 +185,6 @@ touchscreen:
       mirror_x: false
       mirror_y: false
       swap_xy: false
-    on_touch:
-      - lambda: |-
-            ESP_LOGI("cal", "x=%d, y=%d, x_raw=%d, y_raw=%0d",
-            touch.x,
-            touch.y,
-            touch.x_raw,
-            touch.y_raw
-            );
 
 web_server:
   port: 80
@@ -300,7 +292,16 @@ number:
 binary_sensor:
   - platform: status
     name: Online
-    id: ink_ha_connected    
+    id: ink_ha_connected
+    on_state:
+      then:
+        - lvgl.label.update:
+            id: config_ha_connected_value
+            text: !lambda |-
+              if(x)
+                return "Yes";
+              else
+                return "No";
 
 sensor:
   - platform: uptime
@@ -916,6 +917,23 @@ text_sensor:
         return std::string("Very abnormal");} 
       else {
         return std::string("Extremely abnormal");}    
+  - platform: wifi_info
+    ip_address:
+      name: ESP IP Address
+      address_0:
+        name: ESP IP Address
+        on_value:
+          then:
+            - lvgl.label.update:
+                id: config_ip_value
+                text: !lambda "return x;"
+    ssid:
+      name: ESP Connected SSID
+      on_value:
+        then:
+          - lvgl.label.update:
+              id: config_ssid_value
+              text: !lambda "return x;"
 
 light:
   - platform: esp32_rmt_led_strip
@@ -948,33 +966,43 @@ lvgl:
   touchscreens:
     - lily_touch
   buffer_size: 100%
+  top_layer:
+    widgets:
+      - image:
+          id: ym_image
+          src: ym_logo
+          align: CENTER
+          x: 80
+          y: -309
+      - label:
+          id: timeVal
+          align: LEFT_MID
+          text_font: montserrat_18
+          text_color: my_white
+          x: 2
+          y: -309
+          text: "00:00AM"
+      - label:
+          id: wifi_stat
+          align: CENTER
+          text_font: montserrat_18
+          text_color: my_gray
+          x: 42
+          y: -309
+          text: "\uF1EB"
   pages:            
     - id: main_page
       bg_color: my_black
       scrollbar_mode: "OFF"
+      on_swipe_left:
+        - lvgl.page.next:
+            animation: OUT_LEFT
+            time: 200ms
+      on_swipe_right:
+        - lvgl.page.previous:
+            animation: OUT_RIGHT
+            time: 200ms
       widgets:
-        - image:
-            id: ym_image          
-            src: ym_logo
-            align: CENTER
-            x: 80
-            y: -309
-        - label:
-            id: timeVal
-            align: LEFT_MID
-            text_font: montserrat_18
-            text_color: my_white
-            x: 2
-            y: -309
-            text: "00:00AM"
-        - label:
-            id: wifi_stat
-            align: CENTER
-            text_font: montserrat_18
-            text_color: my_gray
-            x: 42
-            y: -309
-            text: "\uF1EB"
 # AQI box
         - obj:
             id: aqi_widget
@@ -1473,3 +1501,90 @@ lvgl:
             x: -2
             y: 299
             text: "%"
+    - id: config_page
+      bg_color: my_black
+      scrollbar_mode: "OFF"
+      on_swipe_left:
+        - lvgl.page.next:
+            animation: OUT_LEFT
+            time: 200ms
+      on_swipe_right:
+        - lvgl.page.previous:
+            animation: OUT_RIGHT
+            time: 200ms
+      widgets:
+# IP address box
+        - label:
+            id: config_ip_label
+            align: LEFT_MID
+            text_font: montserrat_14
+            text_color: my_white
+            long_mode: WRAP
+            x: 2
+            y: -246
+            text: "IP:"
+        - label:
+            id: config_ip_value
+            align: RIGHT_MID
+            text_font: montserrat_22
+            text_color: my_white
+            long_mode: WRAP
+            x: -2
+            y: -234
+            text: "0.0.0.0"
+        - line:
+            points:
+              - 0, 106
+              - 180, 106
+            line_width: 1
+            line_color: 0x00dfff
+# SSID box
+        - label:
+            id: config_ssid_label
+            align: LEFT_MID
+            text_font: montserrat_14
+            text_color: my_white
+            long_mode: SCROLL
+            x: 2
+            y: -205
+            text: "SSID:"
+        - label:
+            id: config_ssid_value
+            align: RIGHT_MID
+            text_font: montserrat_22
+            text_color: my_white
+            long_mode: SCROLL
+            x: -2
+            y: -193
+            text: ""
+        - line:
+            points:
+              - 0, 147
+              - 180, 147
+            line_width: 1
+            line_color: 0x00dfff
+# HA Connected box
+        - label:
+            id: config_ha_connected_label
+            align: LEFT_MID
+            text_font: montserrat_14
+            text_color: my_white
+            long_mode: WRAP
+            x: 2
+            y: -164
+            text: "HA Connected:"
+        - label:
+            id: config_ha_connected_value
+            align: RIGHT_MID
+            text_font: montserrat_22
+            text_color: my_white
+            long_mode: WRAP
+            x: -2
+            y: -152
+            text: ""
+        - line:
+            points:
+              - 0, 188
+              - 180, 188
+            line_width: 1
+            line_color: 0x00dfff
