@@ -10,12 +10,12 @@ on:
 
 jobs:
   build:
-    name: Building ${{ input.config }} / ${{ matrix.esphome-version }}
+    name: Building ${{ inputs.config }
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4.1.7
-      - name: Halo (${{ inputs.config }})
+      - name: Build Halo (${{ inputs.config }})
         uses: esphome/build-action@v6.0.0
         with:
           yaml-file: TFT_LCD/T-Display-Long/V1/Firmware/ESPHome/${{ inputs.config }}.yaml
