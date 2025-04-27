@@ -23,7 +23,13 @@ jobs:
         with:
           yaml-file: ${{ matrix.file }}
           version: ${{ matrix.esphome-version }}
-      - name: upload build
+      - name: upload factory build
         uses: actions/upload-artifact@v4.6.2
         with:
-          path: ${{ steps.esphome-build.outputs.name }}
+          name: Factory build
+          path: ${{ steps.esphome-build.outputs.name }}/${{ steps.esphome-build.outputs.name }}.factory.bin
+      - name: upload OTA build
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: OTA build
+          path: ${{ steps.esphome-build.outputs.name }}/${{ steps.esphome-build.outputs.name }}.ota.bin
