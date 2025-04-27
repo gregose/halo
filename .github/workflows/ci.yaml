@@ -11,7 +11,6 @@ jobs:
       max-parallel: 3
       matrix:
         file:
-          - TFT_LCD/T-Display-Long/V1/Firmware/ESPHome/Halo-v1.yaml
           - TFT_LCD/T-Display-Long/V1/Firmware/ESPHome/Halo-v1-dev.yaml
         esphome-version:
           - stable
@@ -23,3 +22,9 @@ jobs:
         with:
           yaml-file: ${{ matrix.file }}
           version: ${{ matrix.esphome-version }}
+            - name: Upload artifact
+      - name: upload build
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: ${{ steps.esphome-build.outputs.name }}
+          path: output
