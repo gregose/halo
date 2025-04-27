@@ -1559,7 +1559,7 @@ lvgl:
             long_mode: SCROLL
             x: -2
             y: -193
-            text: ""
+            text: "None"
         - line:
             points:
               - 0, 147
@@ -1584,7 +1584,7 @@ lvgl:
             long_mode: WRAP
             x: -2
             y: -152
-            text: ""
+            text: "No"
         - line:
             points:
               - 0, 188
