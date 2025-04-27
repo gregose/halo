@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: Building ${{ inputs.config }
+    name: Building ${{ inputs.config }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
